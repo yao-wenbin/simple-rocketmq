@@ -1,9 +1,9 @@
-package com.yaowb;
+package com.yaowb.commitlog;
 
+import com.yaowb.Message;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**

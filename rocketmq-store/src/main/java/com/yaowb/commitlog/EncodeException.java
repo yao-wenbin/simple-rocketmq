@@ -1,4 +1,4 @@
-package com.yaowb;
+package com.yaowb.commitlog;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
