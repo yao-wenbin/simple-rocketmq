@@ -1,5 +1,6 @@
 package com.yaowb;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
@@ -47,6 +48,8 @@ public class Message {
 
 
     private long preparedTransactionOffset;
+
+    private ByteBuffer encodedBuff;
 
 
 
@@ -106,5 +109,13 @@ public class Message {
         return byteBuffer;
     }
 
+    public Message encodedBuff(ByteBuffer encodedBuff) {
+        this.encodedBuff = encodedBuff;
+        return this;
+    }
 
+
+    public void clearByteBuffer() {
+        this.encodedBuff = null;
+    }
 }

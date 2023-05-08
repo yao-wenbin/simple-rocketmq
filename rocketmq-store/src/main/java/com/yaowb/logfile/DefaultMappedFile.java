@@ -1,6 +1,7 @@
 package com.yaowb.logfile;
 
 import com.yaowb.Message;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class DefaultMappedFile implements MappedFile{
     protected volatile int committedPosition;
     protected volatile int flushedPosition;
 
-    protected ByteBuffer byteBuffer;
+    protected ByteBuffer writeBuffer;
     protected File file;
     protected long fileOffset;
     protected String fileName;
@@ -52,7 +53,7 @@ public class DefaultMappedFile implements MappedFile{
     protected FileChannel fileChannel;
 
     protected final MappedByteBuffer mappedByteBuffer;
-
+    private long storeTimestamp;
 
 
     public DefaultMappedFile(final String fileName, final int filesize) throws IOException {
@@ -81,8 +82,28 @@ public class DefaultMappedFile implements MappedFile{
 
 
     @Override
-    public AppendMessageResult appendMessage(Message message, AppendMessageCallback cb) {
-        return null;
+    public AppendMessageResult appendMessage(@NonNull Message message, AppendMessageCallback cb) {
+        int currentPosition = WROTE_POSITION_UPDATER.get(this);
+
+        if (currentPosition > this.fileSize) {
+            log.error("MappedFile.appendMessage return null, because wrote position: {} > file size: {}", currentPosition, this.fileSize);
+            return AppendMessageResult.unknownError();
+        }
+
+        // TODO result batch message
+        // TODO 理清为什么slice后需要position
+        ByteBuffer byteBuffer = appendMessageBuffer().slice();
+        byteBuffer.position(currentPosition);
+
+        AppendMessageResult result = cb.doAppend(fileOffset, byteBuffer, this.fileSize - currentPosition, message);
+        WROTE_POSITION_UPDATER.addAndGet(this, result.wroteBytes());
+        this.storeTimestamp = result.storeTimestamp();
+
+        return result;
+    }
+
+    private ByteBuffer appendMessageBuffer() {
+        return this.writeBuffer != null ? this.writeBuffer : this.mappedByteBuffer;
     }
 
 }
