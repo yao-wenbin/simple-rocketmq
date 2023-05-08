@@ -79,7 +79,7 @@ public class MessageEncoder {
         this.byteBuff.writeByte((byte)topicLength);
         this.byteBuff.writeBytes(topic);
         // 19-20 is Property Len and PropertyData.
-        this.byteBuff.writeShort(properties.length);
+        this.byteBuff.writeShort(propertiesLen);
         this.byteBuff.writeBytes(properties);
         return this.byteBuff.nioBuffer();
     }
