@@ -1,7 +1,6 @@
 package com.yaowb.rocketmq.namesrv;
 
 import com.yaowb.MixAll;
-import io.netty.util.internal.StringUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
@@ -15,7 +14,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -37,7 +35,6 @@ public class NamesrvStartup {
         loadProperties(args);
         // createNamesrvController();
         // namesrvController.start();
-        //
         // createControllerManager();
         log.info("start success");
     }
