@@ -10,17 +10,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rocketmq-store</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>com.yaowb</groupId>
-            <artifactId>rocketmq-common</artifactId>
-        </dependency>
-    </dependencies>
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yaowb</groupId>
+            <artifactId>rocketmq-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>

@@ -36,6 +36,12 @@
                 <artifactId>rocketmq-common</artifactId>
                 <version>${simple.vesrion}</version>
             </dependency>
+
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>5.13.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -93,6 +99,7 @@
             <artifactId>commons-cli</artifactId>
             <version>1.5.0</version>
         </dependency>
+
     </dependencies>
 
 </project>
