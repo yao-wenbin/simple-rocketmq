@@ -19,7 +19,7 @@ public class TransientStorePool {
 
     private final int poolSize = 5;
 
-    // 1M
+    // 1M instead of 1G
     private final int fileSize = 1024 * 1024;
     private final Deque<ByteBuffer> availableBuffers = new ConcurrentLinkedDeque<>();
 
@@ -28,11 +28,13 @@ public class TransientStorePool {
 
     public void init() {
         for (int i = 0; i < poolSize; i++) {
+            // final long address = ((DirectBuffer) byteBuffer).address();
+
             // replace jdk8's DirectBuffer. Using Unsafe to get Bytebuffer Address.
             // 替换掉JDK8中的DirectBuffer. 使用Unsafe方法来获得ByteBuffer的内存地址.
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(fileSize);
             long address = getUnsafe().getLong(byteBuffer, Unsafe.ARRAY_BYTE_BASE_OFFSET);
-            // final long address = ((DirectBuffer) byteBuffer).address();
+
             // using native os function to lock memory address.
             // 使用本地操作系统的函数来锁定内存
             LibC.INSTANCE.mlock(new Pointer(address), new NativeLong(fileSize));

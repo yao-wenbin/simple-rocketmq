@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.channels.Channel;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +29,7 @@ public class RouteInfoManager {
     // Default Broker Heartbeat expired time.
     private final static long DEFAULT_BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;
 
-    private final Map<String /* topic */, Map<String, QueueData>> topicQueueTable = new ConcurrentHashMap<>(1024);
+    private final Map<String /* topic */, Map<String/* brokerName */, QueueData>> topicQueueTable = new ConcurrentHashMap<>(1024);
     private final Map<String /* brokerName */, BrokerData> brokerAddrTable = new ConcurrentHashMap<>(128);
     private final Map<String /* clusterName */, Set<String/* brokerName */>> clusterAddrTable = new ConcurrentHashMap<>(32);
     private final Map<BrokerAddrInfo /* brokerAddr */, BrokerLiveInfo> brokerLiveTable = new ConcurrentHashMap<>(256);
@@ -42,6 +43,10 @@ public class RouteInfoManager {
     }
 
 
+    /**
+     * Router Manager will process the register request
+     * and then register broker data to related tables.
+     */
     public RegisterBrokerResult registerBroker(String clusterName,
                                String brokerAddr,
                                String brokerName,
@@ -110,4 +115,112 @@ public class RouteInfoManager {
 
         return result;
     }
+
+    // public void scanNoActivateBroker() {
+    //     long nowTimeMills = System.currentTimeMillis();
+    //     brokerLiveTable.forEach(((addrInfo, liveInfo) -> {
+    //         if (liveInfo.expired(nowTimeMills)) {
+    //             unRegisterBroker(addrInfo);
+    //         }
+    //     }));
+    // }
+
+    /**
+     * to remove broker or reduce the broker instance count from tables.
+     */
+    public void unRegisterBroker(Set<UnRegisterBroekrRequest> unRegisterBrokerRequest) {
+        Set<String> removedBroker = new HashSet<>();
+
+        try {
+            this.lock.writeLock().lockInterruptibly();
+
+            for (final UnRegisterBroekrRequest request : unRegisterBrokerRequest) {
+                final String brokerName = request.getBrokerName();
+                final String clusterName = request.getClusterName();
+                final String brokerAddr = request.getBrokerAddr();
+
+                brokerLiveTableRemove(clusterName, brokerAddr);
+
+                boolean nameRemoved = brokerAddrTableRemove(brokerName, brokerAddr);
+
+                if (nameRemoved) {
+                    clusterAddrTableRemove(clusterName, brokerName);
+                    removedBroker.add(brokerName);
+                }
+            }
+
+            if (!removedBroker.isEmpty()) {
+                cleanTopicByUnRegisterRequests(removedBroker);
+            }
+
+        } catch (InterruptedException e) {
+            log.warn("interruptedException",e);
+            Thread.currentThread().interrupt();
+        }
+
+
+    }
+
+    private void clusterAddrTableRemove(String clusterName, String brokerName) {
+        Set<String> brokerNameSet = this.clusterAddrTable.get(clusterName);
+        if (brokerNameSet != null) {
+            boolean remove = brokerNameSet.remove(brokerName);
+            log.info("unRegister Broker, remove name: {} from clusterAddrTable {}", brokerName,remove);
+        }
+
+        if (brokerNameSet == null || brokerNameSet.isEmpty()) {
+            this.clusterAddrTable.remove(clusterName);
+            log.info("unRegister Broker, remove cluster: {} from clusterName", clusterName);
+        }
+    }
+
+    private boolean brokerAddrTableRemove(String brokerName, String brokerAddr) {
+        boolean nameRemoved = false;
+        BrokerData brokerData = brokerAddrTable.get(brokerName);
+        if (brokerData != null) {
+            boolean removed = brokerData.getBrokerAddrs().entrySet().removeIf(addr -> brokerAddr.equals(addr.getValue()));
+
+            log.info("unRegisterBroker, remove addr from brokerAddrTable {}", removed);
+
+            if (brokerData.getBrokerAddrs().isEmpty()) {
+                this.brokerAddrTable.remove(brokerName);
+                log.info("unReigsterBroker, remove name: {} from brokerAddrTable true", brokerName);
+                nameRemoved = true;
+            }
+        }
+        return nameRemoved;
+    }
+
+    private void brokerLiveTableRemove(String clusterName, String brokerAddr) {
+        BrokerAddrInfo addrInfo = new BrokerAddrInfo(clusterName, brokerAddr);
+        BrokerLiveInfo liveInfo = brokerLiveTable.remove(addrInfo);
+        log.info("unRegisterBroker, remove {}, from brokerLiveTable {}", addrInfo, liveInfo == null ? "Failed" : "OK");
+    }
+
+    private void cleanTopicByUnRegisterRequests(Set<String> removedBroker) {
+        Iterator<Map.Entry<String, Map<String, QueueData>>> itMap
+                = this.topicQueueTable.entrySet().iterator();
+
+        while(itMap.hasNext()) {
+            Map.Entry<String, Map<String, QueueData>> entry = itMap.next();
+
+            String topic = entry.getKey();
+            Map<String, QueueData> queueDataMap = entry.getValue();
+
+            for (final String brokerName : removedBroker) {
+                QueueData removedQueueData = queueDataMap.remove(brokerName);
+                if (removedQueueData != null) {
+                    log.info("removeTopicByBrokerName, remove topic [{}] one broker's queue [{}]", topic, removedQueueData);
+                }
+                if (queueDataMap.isEmpty()) {
+                    itMap.remove();
+                    log.info("removeTopicByBrokerName, remove the topic [{}] all queue", topic);
+                }
+
+            }
+        }
+
+
+    }
+
 }

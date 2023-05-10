@@ -1,12 +1,14 @@
-package com.yaowb.rocketmq.namesrv;
+package com.yaowb.rocketmq.namesrv.route;
 
-import com.yaowb.rocketmq.namesrv.route.BrokerAddrInfo;
-import com.yaowb.rocketmq.namesrv.route.RouteInfoManager;
+import com.yaowb.rocketmq.namesrv.NamesrvConfig;
+import com.yaowb.rocketmq.namesrv.NamesrvController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.nio.channels.Channel;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +46,22 @@ class RouteInfoManagerTest {
         assertThat(routeInfoManager.getClusterAddrTable().get(clusterName)).contains(brokerName);
         BrokerAddrInfo brokerAddrInfo = new BrokerAddrInfo(clusterName, brokerAddr);
         assertThat(routeInfoManager.getBrokerLiveTable().get(brokerAddrInfo)).isNotNull();
+    }
+
+    @Test
+    void unRegister() {
+        register();
+        String clusterName = "Default-Cluster-1";
+        String brokerName = "Default-Broker-1";
+        String brokerAddr = "127.0.0.1:9876";
+
+        UnRegisterBroekrRequest request = new UnRegisterBroekrRequest(brokerName, brokerAddr, clusterName);
+        routeInfoManager.unRegisterBroker(Stream.of(request).collect(Collectors.toSet()));
+
+        BrokerAddrInfo addrInfo = new BrokerAddrInfo(clusterName, brokerAddr);
+        assertThat(routeInfoManager.getBrokerLiveTable().get(addrInfo)).isNull();
+        assertThat(routeInfoManager.getBrokerAddrTable().get(brokerName)).isNull();
+        assertThat(routeInfoManager.getClusterAddrTable().get(clusterName)).isNull();
     }
 
 }

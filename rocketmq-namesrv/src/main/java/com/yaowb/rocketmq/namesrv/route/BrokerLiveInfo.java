@@ -1,11 +1,16 @@
 package com.yaowb.rocketmq.namesrv.route;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.nio.channels.Channel;
 
 /**
  * @Author yaowenbin
  * @Date 2023/5/9
  */
+@Data
+@NoArgsConstructor
 public class BrokerLiveInfo {
 
     private long lastUpdateTimestamp;
@@ -18,5 +23,9 @@ public class BrokerLiveInfo {
         this.heartbeatTimeoutMills = heartbeatTimeoutMills;
         this.dataVersion = dataVersion;
         this.channel = channel;
+    }
+
+    public boolean expired(long nowTimeMills) {
+        return nowTimeMills - lastUpdateTimestamp > heartbeatTimeoutMills;
     }
 }

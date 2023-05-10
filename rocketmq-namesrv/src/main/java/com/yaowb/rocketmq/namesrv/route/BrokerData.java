@@ -12,12 +12,12 @@ import java.util.Map;
 public class BrokerData {
 
     private String clusterName;
-    private String brokername;
-    private Map<Long, String> brokerAddrs;
+    private String brokerName;
+    private Map<Long/* brokerId*/, String/* brokerAddr */> brokerAddrs;
 
-    public BrokerData(String clusterName, String brokername, Map<Long, String> brokerAddrs) {
+    public BrokerData(String clusterName, String brokerName, Map<Long, String> brokerAddrs) {
         this.clusterName = clusterName;
-        this.brokername = brokername;
+        this.brokerName = brokerName;
         this.brokerAddrs = brokerAddrs;
     }
 }
