@@ -10,6 +10,7 @@ import java.nio.channels.Channel;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -223,4 +224,54 @@ public class RouteInfoManager {
 
     }
 
+    public void registerTopic(String topicName, List<QueueData> topicQueues) {
+        if (topicQueues.isEmpty()) {
+            return;
+        }
+
+        try {
+            this.lock.writeLock().lockInterruptibly();
+            if (this.topicQueueTable.get(topicName) != null) {
+                log.error("Register has been created");
+                return;
+            }
+
+            Map<String, QueueData> queueDataMap = new HashMap<>(topicQueues.size());
+            for (QueueData data : topicQueues) {
+                if (this.brokerAddrTable.get(data.getBrokerName()) == null) {
+                    log.warn("Register topic data has illegal broker: {}", data.getBrokerName());
+                    return;
+                }
+                queueDataMap.put(data.getBrokerName(), data);
+            }
+
+            this.topicQueueTable.put(topicName, queueDataMap);
+            log.info("Register topic {}, route {}", topicName, topicQueues);
+
+        } catch (InterruptedException e) {
+            log.warn("Interrupted exception", e);
+            Thread.currentThread().interrupt();
+        }
+
+    }
+
+    public TopicRouteData pickupTopicRouteData(String topic) {
+        TopicRouteData result = new TopicRouteData();
+        try {
+            this.lock.readLock().lockInterruptibly();
+
+            Map<String, QueueData> queueDataMap = this.topicQueueTable.get(topic);
+            if (queueDataMap == null) {
+                return result;
+            }
+
+            result.setBrokerDataList(queueDataMap.values());
+            result.setQueueDataList(queueDataMap.keySet());
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        return result;
+    }
 }

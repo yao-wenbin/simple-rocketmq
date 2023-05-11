@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.nio.channels.Channel;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,8 +21,14 @@ class RouteInfoManagerTest {
 
     RouteInfoManager routeInfoManager;
 
+    static final String clusterName = "Default-Cluster-%d";
+    static final String brokerName = "Default-Broker-%d";
+    static final long brokerId = 0;
+    static final String brokerAddr = "127.0.0.1:987%d";
+
     @Mock
     Channel channel;
+
 
     @BeforeEach
     void setUp() {
@@ -29,6 +36,68 @@ class RouteInfoManagerTest {
                 new NamesrvConfig(), new NamesrvController()
         );
     }
+
+    void registerDefaultBroker(long brokerNumber) {
+        routeInfoManager.registerBroker(
+                String.format(clusterName, brokerNumber),
+                String.format(brokerAddr, brokerNumber),
+                String.format(brokerName, brokerNumber),
+                brokerId,
+                channel
+        );
+    }
+
+    @Test
+    void format() {
+        assertThat(String.format(clusterName, 1)).isEqualTo("Default-Cluster-1");
+    }
+
+
+    @Test
+    void registerTopic_shouldRegister_whenBrokerHasRegistered() {
+        String topicName = "Default-Topic";
+        List<QueueData> topicQueues = Stream.of(new QueueData("Default-Broker"), new QueueData("Default-Broker-2")).toList();
+
+        routeInfoManager.registerBroker("Default-Cluster", "127.0.0.1:9999" ,"Default-Broker", 0, channel);
+        routeInfoManager.registerBroker("Default-Cluster", "127.0.0.1:9998" ,"Default-Broker-2", 1, channel);
+        routeInfoManager.registerTopic(topicName, topicQueues);
+
+        assertThat(routeInfoManager.getTopicQueueTable().get(topicName)).isNotNull();
+        assertThat(routeInfoManager.getTopicQueueTable().get(topicName)).hasSize(2);
+    }
+
+    @Test
+    void registerTopic_doNothing_whenBrokerNotRegister() {
+        String topicName = "Default-Topic";
+        List<QueueData> topicQueues = Stream.of(new QueueData("Default-Broker"), new QueueData("Default-Broker-2")).toList();
+
+        routeInfoManager.registerTopic(topicName, topicQueues);
+
+        assertThat(routeInfoManager.getTopicQueueTable().get(topicName)).isNullOrEmpty();
+    }
+
+    @Test
+    void pickupTopicRouteData() {
+        registerDefaultBroker(1);
+        registerDefaultBroker(2);
+        String topicName = "Default-Topic";
+        List<QueueData> topicQueues = Stream.of(new QueueData("Default-Broker-1"), new QueueData("Default-Broker-2")).toList();
+        routeInfoManager.registerTopic(topicName, topicQueues);
+
+        TopicRouteData result = routeInfoManager.pickupTopicRouteData("Default-Topic");
+
+        assertThat(result.getBrokerDataList()).isNotEmpty();
+        assertThat(result.getQueueDataList()).isNotEmpty();
+    }
+
+    @Test
+    void pickupTopicRouteData_shouldReturnEmpty_whenTopicNotExists() {
+        TopicRouteData result = routeInfoManager.pickupTopicRouteData("Default-Topic");
+
+        assertThat(result.getBrokerDataList()).isEmpty();
+        assertThat(result.getQueueDataList()).isEmpty();
+    }
+
 
 
     @Test
