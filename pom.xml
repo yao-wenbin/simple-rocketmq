@@ -12,6 +12,8 @@
         <module>rocketmq-store</module>
         <module>rocketmq-common</module>
         <module>rocketmq-namesrv</module>
+        <module>rocketmq-consume</module>
+        <module>rocketmq-ha</module>
     </modules>
 
     <properties>
@@ -34,6 +36,12 @@
             <dependency>
                 <groupId>com.yaowb</groupId>
                 <artifactId>rocketmq-common</artifactId>
+                <version>${simple.vesrion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yaowb</groupId>
+                <artifactId>rocketmq-store</artifactId>
                 <version>${simple.vesrion}</version>
             </dependency>
 

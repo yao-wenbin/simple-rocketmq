@@ -85,6 +85,4 @@ public abstract class ServiceThread implements Runnable {
     protected long getJoinTime() {
         return JOIN_TIME;
     }
-
-
 }

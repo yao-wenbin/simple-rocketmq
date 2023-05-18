@@ -1,12 +1,9 @@
-package com.yaowb;
+package com.yaowb.rocketmq.common.utils;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @Author yaowenbin
