@@ -1,4 +1,4 @@
-package com.yaowb;
+package com.yaowb.rocketmq.common.utils;
 
 /**
  * @Author yaowenbin

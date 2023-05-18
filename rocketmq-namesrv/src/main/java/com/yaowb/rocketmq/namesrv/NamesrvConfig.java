@@ -1,11 +1,8 @@
 package com.yaowb.rocketmq.namesrv;
 
-import com.yaowb.FileUtils;
-import com.yaowb.MixAll;
+import com.yaowb.rocketmq.common.utils.FileUtils;
+import com.yaowb.rocketmq.common.utils.MixAll;
 import lombok.Data;
-import org.apache.logging.log4j.util.Constants;
-
-import java.io.File;
 
 /**
  * @Author yaowenbin

@@ -1,6 +1,5 @@
-package com.yaowb;
+package com.yaowb.rocketmq.common.utils;
 
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 

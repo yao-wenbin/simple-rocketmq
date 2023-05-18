@@ -1,16 +1,14 @@
 package com.yaowb.commitlog;
 
-import com.yaowb.Message;
-import com.yaowb.SysFlag;
 import com.yaowb.logfile.AppendMessageCallback;
 import com.yaowb.logfile.AppendMessageResult;
+import com.yaowb.rocketmq.common.utils.Message;
+import com.yaowb.rocketmq.common.utils.SysFlag;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author yaowenbin

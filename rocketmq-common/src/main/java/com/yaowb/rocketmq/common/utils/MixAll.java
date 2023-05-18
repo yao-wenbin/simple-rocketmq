@@ -1,4 +1,4 @@
-package com.yaowb;
+package com.yaowb.rocketmq.common.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
@@ -7,7 +7,6 @@ import org.apache.commons.cli.Option;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
-import java.util.Queue;
 
 /**
  * @Author yaowenbin

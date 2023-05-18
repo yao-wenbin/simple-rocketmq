@@ -1,12 +1,11 @@
 package com.yaowb.commitlog;
 
-import com.yaowb.Message;
-import com.yaowb.UnitTest;
+import com.yaowb.rocketmq.common.utils.Message;
+import com.yaowb.rocketmq.common.utils.UnitTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 

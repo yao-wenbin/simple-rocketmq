@@ -1,6 +1,6 @@
 package com.yaowb.logfile;
 
-import com.yaowb.Message;
+import com.yaowb.rocketmq.common.utils.Message;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,6 +1,6 @@
 package com.yaowb.rocketmq.namesrv;
 
-import com.yaowb.MixAll;
+import com.yaowb.rocketmq.common.utils.MixAll;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;

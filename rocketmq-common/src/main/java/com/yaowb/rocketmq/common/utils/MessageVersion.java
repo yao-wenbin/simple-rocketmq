@@ -1,4 +1,4 @@
-package com.yaowb;
+package com.yaowb.rocketmq.common.utils;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;

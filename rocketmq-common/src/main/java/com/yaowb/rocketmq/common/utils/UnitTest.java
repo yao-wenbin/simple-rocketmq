@@ -1,4 +1,4 @@
-package com.yaowb;
+package com.yaowb.rocketmq.common.utils;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

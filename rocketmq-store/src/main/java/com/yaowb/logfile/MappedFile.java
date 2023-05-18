@@ -1,6 +1,6 @@
 package com.yaowb.logfile;
 
-import com.yaowb.Message;
+import com.yaowb.rocketmq.common.utils.Message;
 
 /**
  * @Author yaowenbin

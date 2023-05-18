@@ -1,6 +1,6 @@
 package com.yaowb.rocketmq.namesrv.route;
 
-import com.yaowb.MixAll;
+import com.yaowb.rocketmq.common.utils.MixAll;
 import com.yaowb.rocketmq.namesrv.NamesrvConfig;
 import com.yaowb.rocketmq.namesrv.NamesrvController;
 import lombok.Getter;

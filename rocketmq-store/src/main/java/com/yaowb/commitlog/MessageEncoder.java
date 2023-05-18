@@ -1,6 +1,6 @@
 package com.yaowb.commitlog;
 
-import com.yaowb.Message;
+import com.yaowb.rocketmq.common.utils.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
