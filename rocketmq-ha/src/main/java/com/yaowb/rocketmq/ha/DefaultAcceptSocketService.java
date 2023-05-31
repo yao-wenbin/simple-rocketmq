@@ -66,6 +66,7 @@ public class DefaultAcceptSocketService extends ServiceThread implements AcceptS
                 // 等待1秒
                 this.selector.select(1000);
 
+                // 一秒内接收到的请求
                 Set<SelectionKey> selected = this.selector.selectedKeys();
 
                 if (selected.isEmpty()) {
@@ -73,18 +74,23 @@ public class DefaultAcceptSocketService extends ServiceThread implements AcceptS
                 }
 
                 for (SelectionKey selectionKey : selected) {
+                    // 请求是否可以接收
                     if (!selectionKey.isAcceptable()) {
                         log.warn("unexpected ops: selection key : {} is not acceptable", selectionKey);
                     }
 
+                    // 创建套接字通道SocketChannel
                     SocketChannel sc = ((ServerSocketChannel) selectionKey.channel()).accept();
                     if (sc == null) {
                         continue;
                     }
                     log.info("HA Service reveive new connection : {}", sc.socket().getRemoteSocketAddress());
+
                     try {
+                        // 封装为HAConnection
                         HAConnection conn = createConnection(sc);
                         conn.start();
+                        // 加入到HAService中进行管理
                         haService.addConnection(conn);
                     } catch (Exception e) {
                         log.error("create HA Connection catch exception", e);
