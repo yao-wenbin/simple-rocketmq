@@ -16,7 +16,7 @@ public class NamesrvConfig {
      */
     // get from properties, and then get from env.
     // the former Constants means the key in Config file. the laster Constant means the key in Env.
-    private String rocketmqHome = System.getProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getenv(MixAll.ROCKETMQ_HOME));
+    private String rocketmqHome = System.getProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getenv(MixAll.ROCKETMQ_HOME_ENV));
     private String kvConfigPath = FileUtils.joinFilepath(System.getProperty("user.home"), "namesrv", "kvConfig.json");
     private String configStorePath = FileUtils.joinFilepath(System.getProperty("user.home"), "namesrv", "namesrv.properties");
     private String productEnvName = "center";

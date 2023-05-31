@@ -17,8 +17,11 @@ public class MixAll {
 
     public static final String ROCKETMQ_HOME_PROPERTY = "rocketmq.home.dir";
 
-    public static final String ROCKETMQ_HOME = "ROCKETMQ_HOME";
+    public static final String ROCKETMQ_HOME_ENV = "ROCKETMQ_HOME";
+
     public static long MASTER_ID = 0L;
+
+    public static final String ROCKETMQ_HOME = System.getProperty(ROCKETMQ_HOME_PROPERTY, System.getenv(ROCKETMQ_HOME_ENV));
 
     public static void properties2Object(Properties properties, Object obj) {
         for (Method method : obj.getClass().getMethods()) {

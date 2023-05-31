@@ -33,6 +33,7 @@
         <junit.version>5.9.2</junit.version>
         <assertj.version>3.24.2</assertj.version>
         <snakeyaml.version>1.32</snakeyaml.version>
+        <hutool.version>5.8.18</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -76,6 +77,12 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
